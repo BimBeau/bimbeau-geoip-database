@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "service": "BimBeau GeoIP Database Service",
+  "database": "GeoLite2-City",
+  "format": "mmdb.gz",
+  "source": "MaxMind GeoLite2 City",
+  "license": "GeoLite End User License Agreement",
+  "attribution": "This product includes GeoLite2 data created by MaxMind, available from https://www.maxmind.com.",
+  "updated_at": null,
+  "download_url": "https://cdn.jsdelivr.net/gh/BimBeau/bimbeau-geoip-database@main/dist/GeoLite2-City.mmdb.gz",
+  "sha256": null,
+  "size": 0,
+  "status": "pending",
+  "notes": "The database archive has not been published yet. Configure MAXMIND_ACCOUNT_ID and MAXMIND_LICENSE_KEY repository secrets, then run the update workflow."
+}
