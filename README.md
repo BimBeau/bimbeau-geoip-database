@@ -62,7 +62,7 @@ Useful references:
 
 ## Maintenance policy
 
-This repository is expected to be updated automatically by a GitHub Actions workflow using BimBeau-controlled MaxMind credentials stored as repository secrets.
+This repository is expected to be updated automatically by a GitHub Actions workflow using a BimBeau-controlled MaxMind license key stored as a repository secret.
 
 Expected update frequency: twice per week.
 
@@ -75,14 +75,13 @@ The workflow must:
 5. update `manifest.json`;
 6. commit the updated files.
 
-## Required repository secrets
+## Required repository secret
 
-The update workflow expects the following GitHub repository secrets:
+The update workflow expects this GitHub repository secret:
 
-- `MAXMIND_ACCOUNT_ID`
 - `MAXMIND_LICENSE_KEY`
 
-Do not commit MaxMind credentials to the repository.
+A MaxMind account is required to generate this license key. Do not commit MaxMind credentials to the repository.
 
 ## WordPress.org compliance note
 
