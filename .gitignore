@@ -1,0 +1,17 @@
+# Local temporary files
+*.tmp
+*.log
+.DS_Store
+
+# Local MaxMind credentials
+GeoIP.conf
+.env
+
+# Extraction workspace
+work/
+tmp/
+GeoLite2-City_*/
+*.tar
+*.tar.gz
+*.mmdb
+!dist/*.mmdb.gz
