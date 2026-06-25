@@ -17,18 +17,16 @@ jobs:
 
       - name: Validate required secrets
         run: |
-          if [ -z "${MAXMIND_ACCOUNT_ID}" ] || [ -z "${MAXMIND_LICENSE_KEY}" ]; then
-            echo "MAXMIND_ACCOUNT_ID and MAXMIND_LICENSE_KEY repository secrets are required." >&2
+          if [ -z "${MAXMIND_LICENSE_KEY}" ]; then
+            echo "MAXMIND_LICENSE_KEY repository secret is required." >&2
             exit 1
           fi
         env:
-          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
 
       - name: Update database and manifest
         run: bash scripts/update-geolite.sh
         env:
-          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
 
       - name: Commit changes
