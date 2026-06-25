@@ -1,0 +1,24 @@
+{
+  "name": "@bimbeau/geoip-database",
+  "version": "0.0.0",
+  "private": false,
+  "description": "GeoIP database distribution metadata for BimBeau Privacy Analytics.",
+  "files": [
+    "dist/GeoLite2-City.mmdb.gz",
+    "manifest.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BimBeau/bimbeau-geoip-database.git"
+  },
+  "keywords": [
+    "geoip",
+    "geolite2",
+    "bimbeau",
+    "privacy-analytics"
+  ],
+  "author": "BimBeau",
+  "license": "SEE LICENSE IN README.md",
+  "homepage": "https://github.com/BimBeau/bimbeau-geoip-database#readme"
+}
