@@ -1,0 +1,44 @@
+name: Update GeoLite2 City database
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * 2,5'
+
+permissions:
+  contents: write
+
+jobs:
+  update-geolite:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate required secrets
+        run: |
+          if [ -z "${MAXMIND_ACCOUNT_ID}" ] || [ -z "${MAXMIND_LICENSE_KEY}" ]; then
+            echo "MAXMIND_ACCOUNT_ID and MAXMIND_LICENSE_KEY repository secrets are required." >&2
+            exit 1
+          fi
+        env:
+          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+
+      - name: Update database and manifest
+        run: bash scripts/update-geolite.sh
+        env:
+          MAXMIND_ACCOUNT_ID: ${{ secrets.MAXMIND_ACCOUNT_ID }}
+          MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist/GeoLite2-City.mmdb.gz manifest.json
+          if git diff --cached --quiet; then
+            echo "No GeoLite2 update to commit."
+            exit 0
+          fi
+          git commit -m "Update GeoLite2 City database"
+          git push
