@@ -9,7 +9,6 @@ MMDB_PATH="${WORK_DIR}/GeoLite2-City.mmdb"
 OUTPUT_PATH="${DIST_DIR}/GeoLite2-City.mmdb.gz"
 MANIFEST_PATH="${ROOT_DIR}/manifest.json"
 
-: "${MAXMIND_ACCOUNT_ID:?MAXMIND_ACCOUNT_ID is required}"
 : "${MAXMIND_LICENSE_KEY:?MAXMIND_LICENSE_KEY is required}"
 
 rm -rf "${WORK_DIR}"
