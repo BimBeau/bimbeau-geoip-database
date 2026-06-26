@@ -6,21 +6,27 @@ The goal of this repository is to document the GeoIP database update endpoint cl
 
 ## What this service provides
 
-- A MaxMind-compatible `GeoLite2-City.mmdb.gz` database archive.
-- A `manifest.json` file describing the current archive.
-- Integrity metadata such as `sha256`, `size`, and `updated_at`.
-- Source and license attribution.
+* A MaxMind-compatible `GeoLite2-City.mmdb.gz` database archive.
+* A `manifest.json` file describing the current archive.
+* Integrity metadata such as `sha256`, `size`, and `updated_at`.
+* Source and license attribution.
 
 ## What this service does not do
 
-- It does not perform visitor IP lookups remotely.
-- It does not receive visitor IP addresses from local database lookups.
-- It does not provide analytics collection.
-- It does not unlock paid or Pro functionality.
+* It does not perform visitor IP lookups remotely.
+* It does not receive visitor IP addresses from local database lookups.
+* It does not provide analytics collection.
+* It does not unlock paid or Pro functionality.
 
 When BimBeau Privacy Analytics uses local GeoIP database mode, the plugin downloads or updates the database file, stores it in the WordPress uploads directory, and performs lookups locally on the WordPress server.
 
 ## Public endpoints
+
+Current manifest URL:
+
+```text
+https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/manifest.json
+```
 
 Current database URL:
 
@@ -28,20 +34,34 @@ Current database URL:
 https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz
 ```
 
+The plugin should read `manifest.json`, validate the expected metadata, download the archive from `download_url`, verify the `sha256` checksum, decompress the archive, and store the resulting `.mmdb` file locally.
+
+## Distribution notes
+
+The database archive is larger than 20 MB. It must not be served through jsDelivr’s GitHub CDN endpoint because that endpoint can reject large files with:
+
+```text
+File size exceeded the configured limit of 20 MB.
+```
+
+For this reason, the documented endpoints currently use `raw.githubusercontent.com`.
+
 ## Publishing a release asset
 
-The preferred long-term distribution channel for the `.mmdb.gz` archive is a GitHub Release asset.
+The preferred long-term distribution channel for the `.mmdb.gz` archive may be a GitHub Release asset.
 
-Run the `Publish GeoIP release asset` workflow manually after updating `dist/GeoLite2-City.mmdb.gz`. The workflow creates or updates a release, uploads the archive as a release asset, recalculates `sha256` and `size`, and updates `manifest.json` so `download_url` points to the release asset.
+If a release-based distribution is enabled later, the release workflow should upload the existing `dist/GeoLite2-City.mmdb.gz` archive as a release asset, recalculate `sha256` and `size`, and update `manifest.json` so `download_url` points to the release asset.
+
+Until then, `manifest.json` remains the source of truth, and its `download_url` should point only to a working public URL.
 
 ## Data sent during database updates
 
-When a WordPress site downloads the manifest or database archive, the CDN and repository host may receive normal HTTP request metadata, such as:
+When a WordPress site downloads the manifest or database archive, the repository host may receive normal HTTP request metadata, such as:
 
-- the server IP address making the request;
-- request date and time;
-- HTTP headers, including the plugin User-Agent if provided;
-- requested file URL.
+* the server IP address making the request;
+* request date and time;
+* HTTP headers, including the plugin User-Agent if provided;
+* requested file URL.
 
 Local GeoIP lookups do **not** send individual visitor IP addresses to this service.
 
@@ -53,7 +73,7 @@ GeoLite2 data is provided by MaxMind and is subject to MaxMind’s GeoLite End U
 
 Useful references:
 
-- MaxMind GeoLite information: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/
-- MaxMind database update documentation: https://dev.maxmind.com/geoip/updating-databases/
-- MaxMind GeoLite EULA: https://www.maxmind.com/en/geolite/eula
-- MaxMind privacy policy: https://www.maxmind.com/en/privacy-policy
+* MaxMind GeoLite information: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/
+* MaxMind database update documentation: https://dev.maxmind.com/geoip/updating-databases/
+* MaxMind GeoLite EULA: https://www.maxmind.com/en/geolite/eula
+* MaxMind privacy policy: https://www.maxmind.com/en/privacy-policy
