@@ -28,13 +28,27 @@ Current manifest URL:
 https://cdn.jsdelivr.net/gh/BimBeau/bimbeau-geoip-database@main/manifest.json
 ```
 
-Current database URL, once published:
+Current database URL:
 
 ```text
-https://cdn.jsdelivr.net/gh/BimBeau/bimbeau-geoip-database@main/dist/GeoLite2-City.mmdb.gz
+https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz
 ```
 
+Recommended database URL once a GitHub Release has been published:
+
+```text
+https://github.com/BimBeau/bimbeau-geoip-database/releases/latest/download/GeoLite2-City.mmdb.gz
+```
+
+The database archive is larger than 20 MB. It must not be served through jsDelivr's GitHub CDN endpoint because that endpoint can reject large files with `File size exceeded the configured limit of 20 MB.`
+
 The plugin should read `manifest.json`, validate the expected metadata, download the archive, verify the `sha256` checksum, decompress the archive, and store the resulting `.mmdb` file locally.
+
+## Publishing a release asset
+
+The preferred long-term distribution channel for the `.mmdb.gz` archive is a GitHub Release asset.
+
+Run the `Publish GeoIP release asset` workflow manually after updating `dist/GeoLite2-City.mmdb.gz`. The workflow creates or updates a release, uploads the archive as a release asset, recalculates `sha256` and `size`, and updates `manifest.json` so `download_url` points to the release asset.
 
 ## Data sent during database updates
 

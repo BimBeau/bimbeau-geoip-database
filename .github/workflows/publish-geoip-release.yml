@@ -1,0 +1,83 @@
+name: Publish GeoIP release asset
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to create or update
+        required: true
+        default: geoip-latest
+      title:
+        description: Release title
+        required: true
+        default: GeoIP database latest
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate archive exists
+        run: test -f dist/GeoLite2-City.mmdb.gz
+
+      - name: Compute archive metadata
+        id: metadata
+        shell: bash
+        run: |
+          SHA256="$(sha256sum dist/GeoLite2-City.mmdb.gz | awk '{print $1}')"
+          SIZE="$(wc -c < dist/GeoLite2-City.mmdb.gz | tr -d ' ')"
+          UPDATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          DOWNLOAD_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ github.event.inputs.tag }}/GeoLite2-City.mmdb.gz"
+          {
+            echo "sha256=${SHA256}"
+            echo "size=${SIZE}"
+            echo "updated_at=${UPDATED_AT}"
+            echo "download_url=${DOWNLOAD_URL}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Update manifest
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path('manifest.json')
+          manifest = json.loads(path.read_text(encoding='utf-8'))
+          manifest['updated_at'] = os.environ['UPDATED_AT']
+          manifest['download_url'] = os.environ['DOWNLOAD_URL']
+          manifest['sha256'] = os.environ['SHA256']
+          manifest['size'] = int(os.environ['SIZE'])
+          manifest['status'] = 'ready'
+          path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+        env:
+          UPDATED_AT: ${{ steps.metadata.outputs.updated_at }}
+          DOWNLOAD_URL: ${{ steps.metadata.outputs.download_url }}
+          SHA256: ${{ steps.metadata.outputs.sha256 }}
+          SIZE: ${{ steps.metadata.outputs.size }}
+
+      - name: Create or update release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag }}
+          TITLE: ${{ github.event.inputs.title }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/GeoLite2-City.mmdb.gz --clobber
+          else
+            gh release create "$TAG" dist/GeoLite2-City.mmdb.gz --title "$TITLE" --notes "GeoLite2 City database release asset."
+          fi
+
+      - name: Commit manifest update
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update GeoIP manifest release asset metadata
+          file_pattern: manifest.json
