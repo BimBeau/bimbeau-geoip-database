@@ -22,22 +22,10 @@ When BimBeau Privacy Analytics uses local GeoIP database mode, the plugin downlo
 
 ## Public endpoints
 
-Current manifest URL:
-
-```text
-https://cdn.jsdelivr.net/gh/BimBeau/bimbeau-geoip-database@main/manifest.json
-```
-
 Current database URL:
 
 ```text
 https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz
-```
-
-Recommended database URL once a GitHub Release has been published:
-
-```text
-https://github.com/BimBeau/bimbeau-geoip-database/releases/latest/download/GeoLite2-City.mmdb.gz
 ```
 
 The database archive is larger than 20 MB. It must not be served through jsDelivr's GitHub CDN endpoint because that endpoint can reject large files with `File size exceeded the configured limit of 20 MB.`
