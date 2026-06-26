@@ -28,10 +28,6 @@ Current database URL:
 https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz
 ```
 
-The database archive is larger than 20 MB. It must not be served through jsDelivr's GitHub CDN endpoint because that endpoint can reject large files with `File size exceeded the configured limit of 20 MB.`
-
-The plugin should read `manifest.json`, validate the expected metadata, download the archive, verify the `sha256` checksum, decompress the archive, and store the resulting `.mmdb` file locally.
-
 ## Publishing a release asset
 
 The preferred long-term distribution channel for the `.mmdb.gz` archive is a GitHub Release asset.
