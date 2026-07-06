@@ -11,6 +11,7 @@ permissions:
 jobs:
   update-geolite:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,14 +30,43 @@ jobs:
         env:
           MAXMIND_LICENSE_KEY: ${{ secrets.MAXMIND_LICENSE_KEY }}
 
+      - name: Validate generated manifest
+        shell: bash
+        run: |
+          EXPECTED_DOWNLOAD_URL="https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz"
+
+          if [ ! -f manifest.json ]; then
+            echo "manifest.json was not generated." >&2
+            exit 1
+          fi
+
+          if grep -q 'cdn.jsdelivr.net' manifest.json; then
+            echo "manifest.json must not use jsDelivr for the GeoIP database archive." >&2
+            exit 1
+          fi
+
+          if grep -q '/releases/download/' manifest.json; then
+            echo "manifest.json must not use GitHub release assets unless bbpa-unified explicitly allowlists them." >&2
+            exit 1
+          fi
+
+          if ! grep -q "\"download_url\": \"${EXPECTED_DOWNLOAD_URL}\"" manifest.json; then
+            echo "manifest.json does not contain the expected raw.githubusercontent.com download_url." >&2
+            echo "Expected: ${EXPECTED_DOWNLOAD_URL}" >&2
+            exit 1
+          fi
+
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add dist/GeoLite2-City.mmdb.gz manifest.json
+
           if git diff --cached --quiet; then
             echo "No GeoLite2 update to commit."
             exit 0
           fi
+
           git commit -m "Update GeoLite2 City database"
           git push
