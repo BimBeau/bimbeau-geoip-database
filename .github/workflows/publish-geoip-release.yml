@@ -33,7 +33,11 @@ jobs:
           SHA256="$(sha256sum dist/GeoLite2-City.mmdb.gz | awk '{print $1}')"
           SIZE="$(wc -c < dist/GeoLite2-City.mmdb.gz | tr -d ' ')"
           UPDATED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          DOWNLOAD_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${{ github.event.inputs.tag }}/GeoLite2-City.mmdb.gz"
+
+          # Keep the manifest compatible with bbpa-unified.
+          # The plugin currently allowlists raw.githubusercontent.com for this repository.
+          DOWNLOAD_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/dist/GeoLite2-City.mmdb.gz"
+
           {
             echo "sha256=${SHA256}"
             echo "size=${SIZE}"
@@ -51,11 +55,21 @@ jobs:
 
           path = Path('manifest.json')
           manifest = json.loads(path.read_text(encoding='utf-8'))
+
+          expected_download_url = os.environ['DOWNLOAD_URL']
+
+          if 'cdn.jsdelivr.net' in expected_download_url:
+              raise SystemExit('download_url must not use jsDelivr.')
+
+          if '/releases/download/' in expected_download_url:
+              raise SystemExit('download_url must not use GitHub release assets unless bbpa-unified allowlists them.')
+
           manifest['updated_at'] = os.environ['UPDATED_AT']
-          manifest['download_url'] = os.environ['DOWNLOAD_URL']
+          manifest['download_url'] = expected_download_url
           manifest['sha256'] = os.environ['SHA256']
           manifest['size'] = int(os.environ['SIZE'])
           manifest['status'] = 'ready'
+
           path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
           PY
         env:
@@ -79,5 +93,5 @@ jobs:
       - name: Commit manifest update
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update GeoIP manifest release asset metadata
+          commit_message: Update GeoIP manifest metadata
           file_pattern: manifest.json
