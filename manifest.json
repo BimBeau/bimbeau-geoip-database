@@ -6,9 +6,9 @@
   "source": "MaxMind GeoLite2 City",
   "license": "GeoLite End User License Agreement",
   "attribution": "This product includes GeoLite2 data created by MaxMind, available from https://www.maxmind.com.",
-  "updated_at": "2026-09-04T08:03:19Z",
+  "updated_at": "2026-09-08T08:10:18Z",
   "download_url": "https://raw.githubusercontent.com/BimBeau/bimbeau-geoip-database/main/dist/GeoLite2-City.mmdb.gz",
-  "sha256": "0df53fd2113a143b5d4013d8c05c70a1660c58979b3053781716ca7f069fb72f",
-  "size": 31515195,
+  "sha256": "7bc0e2eb927691139e79a9b53a4857766ca5380e524a471572eea49c63880a6f",
+  "size": 31504150,
   "status": "ready"
 }
